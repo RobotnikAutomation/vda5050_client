@@ -25,7 +25,7 @@
 
 #include "vda5050_types/action_parameter_factsheet.hpp"
 #include "vda5050_types/action_scope.hpp"
-#include "vda5050_types/blocking_type.hpp"
+// #include "vda5050_types/blocking_type.hpp"
 
 namespace vda5050_types {
 
@@ -51,7 +51,7 @@ struct AGVAction
   std::optional<std::string> action_description;
 
   /// \brief Array of possible blocking types for defined action.
-  std::optional<std::vector<BlockingType>> blocking_types;
+  // std::optional<std::vector<BlockingType>> blocking_types;
 
   /// \brief Equality operator
   ///
@@ -65,7 +65,7 @@ struct AGVAction
     if (this->action_parameters != other.action_parameters) return false;
     if (this->result_description != other.result_description) return false;
     if (this->action_description != other.action_description) return false;
-    if (this->blocking_types != other.blocking_types) return false;
+    // if (this->blocking_types != other.blocking_types) return false;
     return true;
   }
 

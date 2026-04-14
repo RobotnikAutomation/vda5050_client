@@ -51,10 +51,10 @@ struct PhysicalParameters
   double length;
 
   /// \brief Minimal controlled continuous rotation speed of the AGV [rad/s]
-  std::optional<double> angular_speed_min;
+  // std::optional<double> angular_speed_min;
 
   /// \brief Maximum rotation speed of the AGV [rad/s]
-  std::optional<double> angular_speed_max;
+  // std::optional<double> angular_speed_max;
 
   /// \brief Equality operator
   ///
@@ -71,8 +71,8 @@ struct PhysicalParameters
     if (this->height_max != other.height_max) return false;
     if (this->width != other.width) return false;
     if (this->length != other.length) return false;
-    if (this->angular_speed_min != other.angular_speed_min) return false;
-    if (this->angular_speed_max != other.angular_speed_max) return false;
+    // if (this->angular_speed_min != other.angular_speed_min) return false;
+    // if (this->angular_speed_max != other.angular_speed_max) return false;
     return true;
   }
 

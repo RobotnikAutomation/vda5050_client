@@ -60,7 +60,7 @@ struct Factsheet
 
   /// \brief Summary of current software and hardware versions on the vehicle
   /// and optional network information
-  VehicleConfig vehicle_config;
+  // VehicleConfig vehicle_config;
 
   /// \brief Equality operator
   ///
@@ -76,7 +76,7 @@ struct Factsheet
     if (this->protocol_features != other.protocol_features) return false;
     if (this->agv_geometry != other.agv_geometry) return false;
     if (this->load_specification != other.load_specification) return false;
-    if (this->vehicle_config != other.vehicle_config) return false;
+    // if (this->vehicle_config != other.vehicle_config) return false;
     return true;
   }
 
