@@ -236,6 +236,10 @@ public:
   /// \return True if there are zero nodes, otherwise false.
   bool is_node_states_empty() const;
 
+  /// \brief Check whether the maintained edgeStates array is empty.
+  /// \return True if there are zero edges, otherwise false.
+  bool is_edge_states_empty() const;
+
   /// \brief Check if any actionStates are still executing (not FINISHED or FAILED).
   /// \return True if at least one action is still executing, otherwise false.
   bool are_action_states_still_executing() const;
@@ -251,8 +255,12 @@ public:
   void clear_horizon();
 
   /// \brief Get the current robot state.
-  /// \return const State& the current robot state.
+  /// \return copy of the current robot state.
   State get_state();
+
+  /// \brief Get the current robot state.
+  /// \return const State& of the current robot state.
+  State get_state() const;
 };
 
 }  // namespace state

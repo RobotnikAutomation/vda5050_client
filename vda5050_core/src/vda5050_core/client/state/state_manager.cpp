@@ -374,6 +374,13 @@ bool StateManager::is_node_states_empty() const
 }
 
 //=============================================================================
+bool StateManager::is_edge_states_empty() const
+{
+  std::shared_lock lock(this->mutex_);
+  return this->robot_state_.edge_states.empty();
+}
+
+//=============================================================================
 bool StateManager::are_action_states_still_executing() const
 {
   std::shared_lock lock(this->mutex_);
@@ -386,10 +393,10 @@ bool StateManager::are_action_states_still_executing() const
       action_state.action_status != ActionStatus::FINISHED &&
       action_state.action_status != ActionStatus::FAILED)
     {
-      return false;
+      return true;
     }
   }
-  return true;
+  return false;
 }
 
 //=============================================================================
@@ -451,6 +458,12 @@ void StateManager::clear_horizon()
 }
 
 State StateManager::get_state()
+{
+  std::shared_lock lock(this->mutex_);
+  return this->robot_state_;
+}
+
+State StateManager::get_state() const
 {
   std::shared_lock lock(this->mutex_);
   return this->robot_state_;
