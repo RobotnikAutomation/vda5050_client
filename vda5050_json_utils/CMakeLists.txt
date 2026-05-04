@@ -14,7 +14,7 @@ find_package(nlohmann_json REQUIRED)
 
 include(GNUInstallDirs)
 
-option(ENABLE_ROS2 "Enable ROS 2 message support in JSON utilities" ON)
+option(ENABLE_ROS2 "Enable ROS 2 message support in JSON utilities" OFF)
 
 if(ENABLE_ROS2)
   message(STATUS "Building vda5050_json_utils with ROS 2 support")
