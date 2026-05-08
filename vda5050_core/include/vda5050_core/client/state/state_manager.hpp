@@ -142,6 +142,14 @@ public:
   /// \return is the agv driving?
   bool get_driving_status() const;
 
+  /// \brief Set the paused flag of the AGV
+  /// \param paused is the agv paused?
+  void set_paused(bool paused);
+
+  /// \brief Get the paused flag of the AGV
+  /// \return is the agv paused?
+  std::optional<bool> get_paused() const;
+
   /// \brief Set the distance since the last node as in vda5050
   /// \param distance_since_last_node the new distance since the last node
   void set_distance_since_last_node(double distance_since_last_node);

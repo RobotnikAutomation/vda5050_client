@@ -153,6 +153,20 @@ bool StateManager::get_driving_status() const
 }
 
 //=============================================================================
+void StateManager::set_paused(bool paused)
+{
+  std::unique_lock lock(this->mutex_);
+  this->robot_state_.paused = paused;
+}
+
+//=============================================================================
+std::optional<bool> StateManager::get_paused() const
+{
+  std::shared_lock lock(this->mutex_);
+  return this->robot_state_.paused;
+}
+
+//=============================================================================
 void StateManager::set_distance_since_last_node(double distance_since_last_node)
 {
   std::unique_lock lock(this->mutex_);
