@@ -1958,6 +1958,9 @@ void to_json(nlohmann::json& j, const ActionParameterFactsheetT& msg)
     case ValueDataType::FLOAT:
       j["valueDataType"] = "FLOAT";
       break;
+    case ValueDataType::STRING:
+      j["valueDataType"] = "STRING";
+      break;
     case ValueDataType::ARRAY:
       j["valueDataType"] = "ARRAY";
       break;
@@ -1981,6 +1984,7 @@ void from_json(const nlohmann::json& j, ActionParameterFactsheetT& msg)
   else if (v == "INTEGER") msg.value_data_type = ValueDataType::INTEGER;
   else if (v == "FLOAT") msg.value_data_type = ValueDataType::FLOAT;
   else if (v == "ARRAY") msg.value_data_type = ValueDataType::ARRAY;
+  else if (v == "STRING") msg.value_data_type = ValueDataType::STRING;
   else msg.value_data_type = ValueDataType::OBJECT;
   if (j.contains("description")) msg.description = j.at("description").get<std::string>();
   if (j.contains("isOptional")) msg.is_optional = j.at("isOptional").get<bool>();
