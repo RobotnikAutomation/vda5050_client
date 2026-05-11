@@ -23,6 +23,7 @@
 #include <mqtt/callback.h>
 #include <mqtt/connect_options.h>
 #include <mqtt/iaction_listener.h>
+#include <mqtt/ssl_options.h>
 #include <mqtt/will_options.h>
 
 #include <memory>
@@ -129,6 +130,40 @@ public:
   /// \return Mutable reference to Paho configuration options
   mqtt::connect_options& connect_options();
 
+  /// \brief Set user credentials for MQTT connection
+  ///
+  /// \param username Username for MQTT connection
+  /// \param password Password for MQTT connection
+  void set_user_credentials(const std::string& username, const std::string& password);
+
+  /// \brief Set the trust store for SSL connections
+  ///
+  /// \param trust_store Path to the trust store file in PEM format
+  void set_trust_store(const std::string& trust_store);
+
+  /// \brief Set the client key store for SSL connections
+  ///
+  /// \param key_store Path to the key store file in PEM format
+  void set_key_store(const std::string& key_store);
+
+  /// \brief Set the client private key for SSL connections
+  ///
+  /// \param private_key Path to the private key file in PEM format
+  void set_private_key(const std::string& private_key);
+
+  /// \brief Enable or disable server certificate authentication
+  ///
+  /// \param enable_server_cert_auth Enable server certificate authentication
+  void set_enable_server_cert_auth(bool enable_server_cert_auth);
+
+  /// \brief Configure all SSL options at once
+  ///
+  /// \param trust_store Path to the trust store file in PEM format
+  /// \param key_store Path to the key store file in PEM format
+  /// \param private_key Path to the private key file in PEM format
+  /// \param enable_server_cert_auth Enable server certificate authentication
+  void configure_ssl_options(const std::string& trust_store, const std::string& key_store, const std::string& private_key, bool enable_server_cert_auth);
+
   friend class MqttCallback;
 
 private:
@@ -156,6 +191,12 @@ private:
 
   /// \brief MQTT connection options
   mqtt::connect_options conn_options_;
+
+  /// \brief SSL options applied to MQTT connection options
+  mqtt::ssl_options ssl_options_;
+
+  /// \brief Apply cached SSL options to MQTT connection options
+  void apply_ssl_options();
 };
 
 }  // namespace mqtt_client

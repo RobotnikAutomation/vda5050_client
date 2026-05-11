@@ -229,5 +229,55 @@ PahoMqttClient::PahoMqttClient(
   conn_options_.set_automatic_reconnect(2, 32);
 }
 
+//=============================================================================
+void PahoMqttClient::set_user_credentials(const std::string& username, const std::string& password)
+{
+  conn_options_.set_user_name(username);
+  conn_options_.set_password(password);
+}
+
+//=============================================================================
+void PahoMqttClient::set_trust_store(const std::string& trust_store)
+{
+  ssl_options_.set_trust_store(trust_store);
+  apply_ssl_options();
+}
+
+//=============================================================================
+void PahoMqttClient::set_key_store(const std::string& key_store)
+{
+  ssl_options_.set_key_store(key_store);
+  apply_ssl_options();
+}
+
+//=============================================================================
+void PahoMqttClient::set_private_key(const std::string& private_key)
+{
+  ssl_options_.set_private_key(private_key);
+  apply_ssl_options();
+}
+
+//=============================================================================
+void PahoMqttClient::set_enable_server_cert_auth(bool enable_server_cert_auth)
+{
+  ssl_options_.set_enable_server_cert_auth(enable_server_cert_auth);
+  apply_ssl_options();
+}
+
+//=============================================================================
+void PahoMqttClient::configure_ssl_options(const std::string& trust_store,
+  const std::string& key_store, const std::string& private_key, bool enable_server_cert_auth)
+{
+  set_trust_store(trust_store);
+  set_key_store(key_store);
+  set_private_key(private_key);
+  set_enable_server_cert_auth(enable_server_cert_auth);
+}
+
+//=============================================================================
+void PahoMqttClient::apply_ssl_options()
+{
+  conn_options_.set_ssl(ssl_options_);
+}
 }  // namespace mqtt_client
 }  // namespace vda5050_core
