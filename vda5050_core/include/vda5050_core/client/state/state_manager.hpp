@@ -255,6 +255,9 @@ public:
   /// \brief Clear all state related to the currently stored order.
   void cleanup_previous_order();
 
+  /// \brief Clear only nodeStates and edgeStates, preserving actionStates and the rest of robot state.
+  void cleanup_nodes_and_edges();
+
   /// \brief Set a new order on the vehicle (after clearing any existing order).
   /// \param order The new order to accept and store.
   void set_new_order(const Order& order);

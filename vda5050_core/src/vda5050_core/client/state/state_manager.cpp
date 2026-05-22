@@ -422,6 +422,14 @@ void StateManager::cleanup_previous_order()
 }
 
 //=============================================================================
+void StateManager::cleanup_nodes_and_edges()
+{
+  std::unique_lock lock(this->mutex_);
+  this->robot_state_.node_states.clear();
+  this->robot_state_.edge_states.clear();
+}
+
+//=============================================================================
 void StateManager::set_new_order(const Order& order)
 {
   std::unique_lock lock(this->mutex_);
