@@ -2211,8 +2211,6 @@ void to_json(nlohmann::json& j, const WheelDefinitionT& msg)
 {
   using vda5050_json_utils::optional_field_traits;
   using constraints_trait = optional_field_traits<decltype(msg.constraints)>;
-  using center_displacement_trait =
-    optional_field_traits<std::optional<decltype(msg.center_displacement)>>;
 
   switch (msg.type)
   {
@@ -2237,17 +2235,7 @@ void to_json(nlohmann::json& j, const WheelDefinitionT& msg)
   j["position"] = p;
   j["diameter"] = msg.diameter;
   j["width"] = msg.width;
-  {
-    std::optional<decltype(msg.center_displacement)> center_displacement;
-    if (msg.center_displacement != 0.0)
-    {
-      center_displacement = msg.center_displacement;
-    }
-    if (center_displacement_trait::has_value(center_displacement))
-    {
-      j["centerDisplacement"] = center_displacement_trait::get(center_displacement);
-    }
-  }
+  j["centerDisplacement"] = j.contains("centerDisplacement") ? msg.center_displacement : 0.0;
   if (constraints_trait::has_value(msg.constraints)) j["constraints"] = constraints_trait::get(msg.constraints);
 }
 
