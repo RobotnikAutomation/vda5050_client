@@ -2235,7 +2235,7 @@ void to_json(nlohmann::json& j, const WheelDefinitionT& msg)
   j["position"] = p;
   j["diameter"] = msg.diameter;
   j["width"] = msg.width;
-  j["centerDisplacement"] = j.contains("centerDisplacement") ? msg.center_displacement : 0.0;
+  j["centerDisplacement"] = msg.center_displacement;
   if (constraints_trait::has_value(msg.constraints)) j["constraints"] = constraints_trait::get(msg.constraints);
 }
 
