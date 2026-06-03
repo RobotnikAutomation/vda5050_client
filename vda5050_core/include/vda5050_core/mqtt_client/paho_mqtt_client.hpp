@@ -26,10 +26,14 @@
 #include <mqtt/ssl_options.h>
 #include <mqtt/will_options.h>
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <chrono>
+#include <thread>
 
 #include "vda5050_core/mqtt_client/mqtt_client_interface.hpp"
 
@@ -83,6 +87,12 @@ private:
 class PahoMqttClient : public MqttClientInterface
 {
 public:
+  struct Subscription
+  {
+    MessageHandler handler;
+    int qos;
+  };
+
   /// \brief Create a shared pointer to PahoMqttClient
   ///
   /// \param broker_address Address of the MQTT broker
@@ -183,8 +193,8 @@ private:
   /// \brief Implementation of callback
   MqttCallback callback_;
 
-  /// \brief List of message handlers mapped to topics
-  std::unordered_map<std::string, MessageHandler> handlers_;
+  /// \brief List of subscriptions mapped to topics
+  std::unordered_map<std::string, Subscription> subscriptions_;
 
   /// \brief Mutex protecting list of message handlers
   std::mutex handler_mutex_;
@@ -194,6 +204,10 @@ private:
 
   /// \brief SSL options applied to MQTT connection options
   mqtt::ssl_options ssl_options_;
+  /// \brief Flag set before destruction to stop in-flight resubscription threads
+  std::atomic<bool> shutdown_{false};
+  /// \brief Resubscribe to all cached topics after reconnect
+  void resubscribe_topics();
 
   /// \brief Apply cached SSL options to MQTT connection options
   void apply_ssl_options();

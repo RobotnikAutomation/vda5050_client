@@ -62,6 +62,8 @@ void MqttCallback::connected(const std::string& /*cause*/)
   VDA5050_INFO_STREAM(
     "MQTT client [" << parent_.client_->get_client_id() << "] connected to "
                     << parent_.client_->get_server_uri());
+  // Resubscribe in a detached thread to avoid blocking MQTT callback thread
+  std::thread(&PahoMqttClient::resubscribe_topics, &parent_).detach();
 }
 
 //=============================================================================
@@ -74,10 +76,10 @@ void MqttCallback::connection_lost(const std::string& /*cause*/)
 void MqttCallback::message_arrived(mqtt::const_message_ptr msg)
 {
   std::lock_guard<std::mutex> lock(parent_.handler_mutex_);
-  auto it = parent_.handlers_.find(msg->get_topic());
-  if (it != parent_.handlers_.end())
+  auto it = parent_.subscriptions_.find(msg->get_topic());
+  if (it != parent_.subscriptions_.end())
   {
-    it->second(msg->get_topic(), msg->get_payload());
+    it->second.handler(msg->get_topic(), msg->get_payload());
   }
 }
 
@@ -99,6 +101,7 @@ std::shared_ptr<PahoMqttClient> PahoMqttClient::make(
 //=============================================================================
 PahoMqttClient::~PahoMqttClient()
 {
+  shutdown_ = true;
   disconnect();
 }
 
@@ -170,7 +173,7 @@ void PahoMqttClient::subscribe(
   {
     client_->subscribe(topic, qos)->wait();
     std::lock_guard<std::mutex> lock(handler_mutex_);
-    handlers_[topic] = handler;
+    subscriptions_[topic] = Subscription{handler, qos};
   }
   catch (const mqtt::exception& e)
   {
@@ -185,11 +188,46 @@ void PahoMqttClient::unsubscribe(const std::string& topic)
   {
     client_->unsubscribe(topic)->wait();
     std::lock_guard<std::mutex> lock(handler_mutex_);
-    handlers_.erase(topic);
+    subscriptions_.erase(topic);
   }
   catch (const mqtt::exception& e)
   {
     VDA5050_ERROR_STREAM("MQTT unsubscription failed: " << e.get_message());
+  }
+}
+
+//=============================================================================
+void PahoMqttClient::resubscribe_topics()
+{
+  std::vector<std::pair<std::string, int>> topics_with_qos;
+  {
+    std::lock_guard<std::mutex> lock(handler_mutex_);
+    topics_with_qos.reserve(subscriptions_.size());
+    for (const auto& [topic, subscription] : subscriptions_)
+    {
+      topics_with_qos.emplace_back(topic, subscription.qos);
+    }
+  }
+
+  for (const auto& [topic, qos] : topics_with_qos)
+  {
+    if (shutdown_) return;
+    try
+    {
+      auto token = client_->subscribe(topic, qos);
+      // Set timeout to prevent indefinite blocking
+      if (!token->wait_for(std::chrono::seconds(5)))
+      {
+        VDA5050_ERROR_STREAM(
+          "MQTT resubscription timeout for topic [" << topic << "]");
+      }
+    }
+    catch (const mqtt::exception& e)
+    {
+      VDA5050_ERROR_STREAM(
+        "MQTT resubscription failed for topic [" << topic << "]: "
+                                                   << e.get_message());
+    }
   }
 }
 
