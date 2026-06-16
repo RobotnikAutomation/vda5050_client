@@ -26,8 +26,19 @@ std::shared_ptr<ProtocolAdapter> ProtocolAdapter::make(
   const std::string& interface, const std::string& version,
   const std::string& manufacturer, const std::string serial_number)
 {
+  return make(
+    mqtt_client, interface, version, version, manufacturer, serial_number);
+}
+
+//=============================================================================
+std::shared_ptr<ProtocolAdapter> ProtocolAdapter::make(
+  std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client,
+  const std::string& interface, const std::string& topic_version,
+  const std::string& header_version,
+  const std::string& manufacturer, const std::string serial_number)
+{
   auto adapter = std::shared_ptr<ProtocolAdapter>(new ProtocolAdapter(
-    mqtt_client, interface, version, manufacturer, serial_number));
+    mqtt_client, interface, topic_version, header_version, manufacturer, serial_number));
   return adapter;
 }
 
@@ -36,14 +47,26 @@ ProtocolAdapter::ProtocolAdapter(
   std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client,
   const std::string& interface, const std::string& version,
   const std::string& manufacturer, const std::string serial_number)
+: ProtocolAdapter(
+    mqtt_client, interface, version, version, manufacturer, serial_number)
+{
+}
+
+//=============================================================================
+ProtocolAdapter::ProtocolAdapter(
+  std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client,
+  const std::string& interface, const std::string& topic_version,
+  const std::string& header_version,
+  const std::string& manufacturer, const std::string serial_number)
 : mqtt_client_(mqtt_client),
   interface_(interface),
-  version_(version),
+  topic_version_(topic_version),
+  header_version_(header_version),
   manufacturer_(manufacturer),
   serial_number_(serial_number)
 {
   std::string topic_prefix = fmt::format(
-    "{}/{}/{}/{}", interface_, version_, manufacturer_, serial_number_);
+    "{}/{}/{}/{}", interface_, topic_version_, manufacturer_, serial_number_);
 
   topic_names_ = {
     {std::type_index(typeid(vda5050_types::Connection)),

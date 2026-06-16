@@ -61,7 +61,8 @@ protected:
   std::shared_ptr<vda5050_execution::ProtocolAdapter> adapter_;
 
   std::string interface_;
-  std::string version_;
+  std::string topic_version_;
+  std::string header_version_;
   std::string manufacturer_;
   std::string serial_number_;
 
@@ -73,17 +74,18 @@ protected:
   void SetUp()
   {
     interface_ = "uagv";
-    version_ = "v2";
+    topic_version_ = "v2";
+    header_version_ = "2.0.0";
     manufacturer_ = "ROS-I";
     serial_number_ = "S001";
 
     mock_ = std::make_shared<MockMqttClient>();
 
     adapter_ = vda5050_execution::ProtocolAdapter::make(
-      mock_, interface_, version_, manufacturer_, serial_number_);
+      mock_, interface_, topic_version_, header_version_, manufacturer_, serial_number_);
 
     topic_prefix_ = fmt::format(
-      "{}/{}/{}/{}/", interface_, version_, manufacturer_, serial_number_);
+      "{}/{}/{}/{}/", interface_, topic_version_, manufacturer_, serial_number_);
 
     qos_ = 0;
     retained_ = false;
@@ -112,7 +114,7 @@ TYPED_TEST(ProtocolAdapterTest, PublishMessage)
       auto j = nlohmann::json::parse(message);
 
       EXPECT_EQ(j["headerId"], 0);
-      EXPECT_EQ(j["version"], this->version_);
+      EXPECT_EQ(j["version"], this->header_version_);
       EXPECT_EQ(j["manufacturer"], this->manufacturer_);
       EXPECT_EQ(j["serialNumber"], this->serial_number_);
     });

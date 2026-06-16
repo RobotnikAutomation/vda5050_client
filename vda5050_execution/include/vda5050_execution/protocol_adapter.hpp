@@ -84,6 +84,12 @@ public:
     const std::string& interface, const std::string& version,
     const std::string& manufacturer, const std::string serial_number);
 
+  static std::shared_ptr<ProtocolAdapter> make(
+    std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client,
+    const std::string& interface, const std::string& topic_version,
+    const std::string& header_version,
+    const std::string& manufacturer, const std::string serial_number);
+
   template <typename MessageT>
   void publish(MessageT message, int qos, bool retained = false)
   {
@@ -98,7 +104,7 @@ public:
     try
     {
       vda5050_types::Header header{
-        header_ids_[type_idx]++, std::chrono::system_clock::now(), version_,
+        header_ids_[type_idx]++, std::chrono::system_clock::now(), header_version_,
         manufacturer_, serial_number_};
       message.header = header;
 
@@ -167,13 +173,20 @@ private:
     const std::string& interface, const std::string& version,
     const std::string& manufacturer, const std::string serial_number);
 
+  ProtocolAdapter(
+    std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client,
+    const std::string& interface, const std::string& topic_version,
+    const std::string& header_version,
+    const std::string& manufacturer, const std::string serial_number);
+
   std::shared_ptr<vda5050_core::mqtt_client::MqttClientInterface> mqtt_client_;
 
   std::unordered_map<std::type_index, std::string> topic_names_;
   std::unordered_map<std::type_index, uint32_t> header_ids_;
 
   std::string interface_;
-  std::string version_;
+  std::string topic_version_;
+  std::string header_version_;
   std::string manufacturer_;
   std::string serial_number_;
 };
